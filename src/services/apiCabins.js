@@ -5,7 +5,18 @@ export const getCabins = async () => {
 
   if (error) {
     console.error(error);
-    throw new Error("Cabins could not be  loaded");
+    throw new Error("Cabins could not be loaded");
+  }
+
+  return data;
+};
+
+export const createCabin = async (newCabin) => {
+  const { data, error } = await supabase.from("cabins").insert([newCabin]);
+
+  if (error) {
+    console.error(error);
+    throw new Error("Cabins could not be added");
   }
 
   return data;
