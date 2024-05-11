@@ -19,8 +19,9 @@ function UpdateSettingsForm() {
   const { updateSetting, isUpdating } = useUpdateSetting();
 
   const handleUpdate = (e, fieldName) => {
-    const { value } = e.target;
+    const { value, defaultValue } = e.target;
     if (!value) return;
+    if (value === defaultValue) return;
     updateSetting({ [fieldName]: value });
   };
 
