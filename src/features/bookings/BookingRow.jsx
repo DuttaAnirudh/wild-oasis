@@ -1,3 +1,10 @@
+import { useNavigate } from "react-router-dom";
+import {
+  HiArrowDownOnSquare,
+  HiArrowUpOnSquare,
+  HiEye,
+  HiTrash,
+} from "react-icons/hi2";
 import styled from "styled-components";
 import { format, isToday } from "date-fns";
 
@@ -6,6 +13,8 @@ import Table from "../../ui/Table";
 
 import { formatCurrency } from "../../utils/helpers";
 import { formatDistanceFromNow } from "../../utils/helpers";
+import Menus from "../../ui/Menus";
+import Modal from "../../ui/Modal";
 
 const Cabin = styled.div`
   font-size: 1.6rem;
@@ -34,7 +43,7 @@ const Amount = styled.div`
   font-weight: 500;
 `;
 
-function BookingRow({
+const BookingRow = ({
   booking: {
     id: bookingId,
     created_at,
@@ -47,7 +56,9 @@ function BookingRow({
     guests: { fullName: guestName, email },
     cabins: { name: cabinName },
   },
-}) {
+}) => {
+  const navigate = useNavigate();
+
   const statusToTagName = {
     unconfirmed: "blue",
     "checked-in": "green",
@@ -79,8 +90,42 @@ function BookingRow({
       <Tag type={statusToTagName[status]}>{status.replace("-", " ")}</Tag>
 
       <Amount>{formatCurrency(totalPrice)}</Amount>
+
+      <Modal>
+        <Menus.Menu>
+          <Menus.Toggle id={bookingId} />
+          <Menus.List id={bookingId}>
+            <Menus.Button
+              icon={<HiEye />}
+              onClick={() => navigate(`/bookings/${bookingId}`)}
+            >
+              See details
+            </Menus.Button>
+
+            {status === "unconfirmed" && (
+              <Menus.Button
+                icon={<HiArrowDownOnSquare />}
+                onClick={() => navigate(`/checkin/${bookingId}`)}
+              >
+                Check in
+              </Menus.Button>
+            )}
+
+            {status === "checked-in" && (
+              <Menus.Button
+                icon={<HiArrowUpOnSquare />}
+                onClick={() => navigate(`/checkout/${bookingId}`)}
+              >
+                Check Out
+              </Menus.Button>
+            )}
+
+            <Menus.Button icon={<HiTrash />}>Delete booking</Menus.Button>
+          </Menus.List>
+        </Menus.Menu>
+      </Modal>
     </Table.Row>
   );
-}
+};
 
 export default BookingRow;
