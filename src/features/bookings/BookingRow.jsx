@@ -16,6 +16,8 @@ import { formatDistanceFromNow } from "../../utils/helpers";
 import Menus from "../../ui/Menus";
 import Modal from "../../ui/Modal";
 import { useCheckout } from "../check-in-out/useCheckout";
+import ConfirmDelete from "../../ui/ConfirmDelete";
+import { useDeleteBooking } from "./useDeleteBooking";
 
 const Cabin = styled.div`
   font-size: 1.6rem;
@@ -61,6 +63,8 @@ const BookingRow = ({
   const navigate = useNavigate();
 
   const { checkout, isCheckingOut } = useCheckout();
+
+  const { isDeleting, deleteBooking } = useDeleteBooking();
 
   const statusToTagName = {
     unconfirmed: "blue",
@@ -124,8 +128,18 @@ const BookingRow = ({
               </Menus.Button>
             )}
 
-            <Menus.Button icon={<HiTrash />}>Delete booking</Menus.Button>
+            <Modal.Open opens="delete-booking">
+              <Menus.Button icon={<HiTrash />}>Delete booking</Menus.Button>
+            </Modal.Open>
           </Menus.List>
+
+          <Modal.Window name="delete-booking">
+            <ConfirmDelete
+              resourceName={`booking #${bookingId}`}
+              onConfirm={() => deleteBooking(bookingId)}
+              disabled={isDeleting}
+            />
+          </Modal.Window>
         </Menus.Menu>
       </Modal>
     </Table.Row>
