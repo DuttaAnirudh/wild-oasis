@@ -7,8 +7,8 @@ import { useLogin } from "./useLogin";
 import SpinnerMini from "../../ui/SpinnerMini";
 
 function LoginForm() {
-  const [email, setEmail] = useState("yourEmail@example.com");
-  const [password, setPassword] = useState("pass0987");
+  const [email, setEmail] = useState("anirudh@example.com");
+  const [password, setPassword] = useState("pass9876");
 
   const { login, isLogingIn } = useLogin();
 
@@ -17,7 +17,15 @@ function LoginForm() {
 
     if (!email || !password) return;
 
-    login({ email, password });
+    login(
+      { email, password },
+      {
+        onSettled: () => {
+          setEmail("");
+          setPassword("");
+        },
+      }
+    );
   }
 
   return (
