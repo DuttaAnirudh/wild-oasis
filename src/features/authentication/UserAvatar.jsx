@@ -34,7 +34,9 @@ const UserAvatar = () => {
         src={avatar || "default-user.jpg"}
         alt={`Avatar of ${fullName}`}
       />
-      <span>{firstName[0].toUpperCase() + firstName.slice(1)}</span>
+      <span>
+        {firstName[0].toUpperCase() + firstName.slice(1).toLowerCase()}
+      </span>
     </StyledUserAvatar>
   );
 };
