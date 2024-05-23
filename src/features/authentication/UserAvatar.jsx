@@ -26,7 +26,7 @@ const UserAvatar = () => {
 
   const { fullName, avatar } = user.user_metadata;
 
-  const firstName = fullName.split(" ").at(0);
+  const firstName = fullName?.split(" ").at(0);
 
   return (
     <StyledUserAvatar>
@@ -35,7 +35,9 @@ const UserAvatar = () => {
         alt={`Avatar of ${fullName}`}
       />
       <span>
-        {firstName[0].toUpperCase() + firstName.slice(1).toLowerCase()}
+        {fullName
+          ? firstName[0]?.toUpperCase() + firstName?.slice(1).toLowerCase()
+          : "User"}
       </span>
     </StyledUserAvatar>
   );
