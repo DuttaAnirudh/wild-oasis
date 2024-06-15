@@ -24,6 +24,7 @@ const variations = {
   primary: css`
     color: var(--color-brand-50);
     background-color: var(--color-brand-600);
+    align-self: flex-start;
 
     &:hover {
       background-color: var(--color-brand-700);
@@ -48,6 +49,18 @@ const variations = {
   `,
 };
 
+const alignment = {
+  start: css`
+    align-self: start;
+  `,
+  center: css`
+    align-self: center;
+  `,
+  end: css`
+    align-self: end;
+  `,
+};
+
 const Button = styled.button`
   border: none;
   border-radius: var(--border-radius-sm);
@@ -55,10 +68,12 @@ const Button = styled.button`
 
   ${(props) => sizes[props.size]}
   ${(props) => variations[props.variation]};
+  ${(props) => alignment[props.alignment]}
 `;
 Button.defaultProps = {
   variation: "primary",
   size: "medium",
+  alignment: "start",
 };
 
 export default Button;
