@@ -1,0 +1,75 @@
+import { useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
+import Form from "../../ui/Form";
+import FormRow from "../../ui/FormRow";
+import Heading from "../../ui/Heading";
+import Input from "../../ui/Input";
+import Checkbox from "../../ui/Checkbox";
+import Button from "../../ui/Button";
+import ButtonGroup from "../../ui/ButtonGroup";
+
+const NewBookingForm = () => {
+  const [checkInDate, setCheckInDate] = useState(new Date());
+  const [checkOutDate, setCheckOutDate] = useState(new Date());
+
+  return (
+    <Form>
+      <Heading as="h4">Personal Details</Heading>
+      <FormRow label="Full Name">
+        <Input />
+      </FormRow>
+      <FormRow label="Email">
+        <Input />
+      </FormRow>
+      <FormRow label="Nationality">
+        <Input />
+      </FormRow>
+      <FormRow label="National Id">
+        <Input />
+      </FormRow>
+
+      <Heading as="h4">Stay Details</Heading>
+
+      <FormRow label="Number of Guests">
+        <Input type="number" />
+      </FormRow>
+
+      <FormRow label="Check-in date">
+        <DatePicker
+          selected={checkInDate}
+          onChange={(date) => setCheckInDate(date)}
+          dateFormat="dd/MM/yyyy"
+        />
+      </FormRow>
+
+      <FormRow label="Check-out date">
+        <DatePicker
+          selected={checkOutDate}
+          onChange={(date) => setCheckOutDate(date)}
+          dateFormat="dd/MM/yyyy"
+        />
+      </FormRow>
+
+      <FormRow label="Choose Cabin">
+        <ButtonGroup>
+          <Button size="small" alignment="start">
+            Add Cabin
+          </Button>
+        </ButtonGroup>
+      </FormRow>
+
+      <FormRow>
+        <Checkbox>include breakfast?</Checkbox>
+      </FormRow>
+      <ButtonGroup>
+        <Button type="submit" alignment="end">
+          Book Now
+        </Button>
+      </ButtonGroup>
+    </Form>
+  );
+};
+
+export default NewBookingForm;

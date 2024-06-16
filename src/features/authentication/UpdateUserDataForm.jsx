@@ -5,6 +5,7 @@ import FileInput from "../../ui/FileInput";
 import Form from "../../ui/Form";
 import FormRow from "../../ui/FormRow";
 import Input from "../../ui/Input";
+import ButtonGroup from "../../ui/ButtonGroup";
 
 import { useUser } from "./useUser";
 import { useUpdateUser } from "./useUpdateUser";
@@ -66,17 +67,20 @@ const UpdateUserDataForm = () => {
           disabled={isUpdating}
         />
       </FormRow>
-      <FormRow>
+      <ButtonGroup>
         <Button
           type="reset"
+          alignment="end"
           variation="secondary"
           onClick={handleCancel}
           disabled={isUpdating}
         >
           Cancel
         </Button>
-        <Button disabled={isUpdating}>Update account</Button>
-      </FormRow>
+        <Button disabled={isUpdating} alignment="end">
+          Update account
+        </Button>
+      </ButtonGroup>
     </Form>
   );
 };

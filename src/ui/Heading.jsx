@@ -1,11 +1,5 @@
 import styled, { css } from "styled-components";
 
-// const test = `text-align: center`;
-// const test = css`
-//   text-align: center;
-//   ${10 > 5 && "background-color: green"}
-// `;
-
 const Heading = styled.h1`
   ${(props) =>
     props.as === "h1" &&
@@ -30,7 +24,7 @@ const Heading = styled.h1`
     css`
       font-size: 3rem;
       font-weight: 600;
-      text-align: center;
+      padding-block: 1rem;
     `}
   font-size: 20px;
   font-weight: 600;

@@ -4,6 +4,7 @@ import Form from "../../ui/Form";
 import FormRow from "../../ui/FormRow";
 import Input from "../../ui/Input";
 import { useSignup } from "./useSignup";
+import ButtonGroup from "../../ui/ButtonGroup";
 
 function SignupForm() {
   const { signup, isSigningUp } = useSignup();
@@ -76,7 +77,7 @@ function SignupForm() {
         />
       </FormRow>
 
-      <FormRow>
+      <ButtonGroup>
         {/* type is an HTML attribute! */}
         <Button
           variation="secondary"
@@ -87,7 +88,7 @@ function SignupForm() {
           Cancel
         </Button>
         <Button disabled={isSigningUp}>Create new user</Button>
-      </FormRow>
+      </ButtonGroup>
     </Form>
   );
 }
