@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { formatCurrency } from "../../utils/helpers";
 import Table from "../../ui/Table";
 import Button from "../../ui/Button";
+import { useNewBookingContext } from "../context/NewBookingContext";
 
 const Img = styled.img`
   display: block;
@@ -41,6 +42,10 @@ const SelectCabinRow = ({ cabin }) => {
     description,
   } = cabin;
 
+  const { selectedCabinName, dispatch } = useNewBookingContext();
+
+  const selectedCabin = selectedCabinName === name;
+
   return (
     <>
       <Table.Row>
@@ -53,7 +58,13 @@ const SelectCabinRow = ({ cabin }) => {
         ) : (
           <span>&mdash;</span>
         )}
-        <Button size="small">Add</Button>
+        <Button
+          size="small"
+          variation={selectedCabin ? "primary" : "secondary"}
+          onClick={() => dispatch({ type: "selectCabin", payload: cabin })}
+        >
+          {selectedCabin ? "Added" : "Select"}
+        </Button>
       </Table.Row>
     </>
   );

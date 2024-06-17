@@ -4,13 +4,15 @@ import Table from "../../ui/Table";
 import Menus from "../../ui/Menus";
 import Empty from "../../ui/Empty";
 import { useFetchCabins } from "./useFetchCabins";
+import { useNewBookingContext } from "../context/NewBookingContext";
 
 const SelectCabinTable = () => {
   const { isLoading, cabins, error } = useFetchCabins();
+  const { numOfGuest } = useNewBookingContext();
 
-  const numOfGuests = 4; // TEST
-
-  const availableCabins = cabins.filter((cabin) => cabin.maxCapacity >= 4);
+  const availableCabins = cabins?.filter(
+    (cabin) => cabin.maxCapacity >= numOfGuest
+  );
   if (isLoading) return <Spinner />;
 
   if (!cabins.length) return <Empty resource="Cabin" />;

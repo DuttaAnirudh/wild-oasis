@@ -3,7 +3,7 @@ import Heading from "../../ui/Heading";
 import Row from "../../ui/Row";
 import SelectCabinTable from "./SelectCabinTable";
 
-const SelectCabinModal = () => {
+const SelectCabinModal = ({ onCloseModal }) => {
   return (
     <div>
       <Row>
@@ -11,7 +11,9 @@ const SelectCabinModal = () => {
 
         <SelectCabinTable />
 
-        <Button alignment="end">Done</Button>
+        <Button onClick={onCloseModal} alignment="end">
+          Done
+        </Button>
       </Row>
     </div>
   );
