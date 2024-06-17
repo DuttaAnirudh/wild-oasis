@@ -9,6 +9,8 @@ import Input from "../../ui/Input";
 import Checkbox from "../../ui/Checkbox";
 import Button from "../../ui/Button";
 import ButtonGroup from "../../ui/ButtonGroup";
+import SelectCabins from "./SelectCabins";
+import Row from "../../ui/Row";
 
 const NewBookingForm = () => {
   const [checkInDate, setCheckInDate] = useState(new Date());
@@ -52,13 +54,12 @@ const NewBookingForm = () => {
         />
       </FormRow>
 
-      <FormRow label="Choose Cabin">
-        <ButtonGroup>
-          <Button size="small" alignment="start">
-            Add Cabin
-          </Button>
-        </ButtonGroup>
-      </FormRow>
+      <Row type="horizontal">
+        <FormRow label="Choose Cabin">
+          <SelectCabins />
+        </FormRow>
+        <Heading as="h4"> Cabin - 00X</Heading>
+      </Row>
 
       <FormRow>
         <Checkbox>include breakfast?</Checkbox>
