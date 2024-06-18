@@ -10,3 +10,16 @@ export const getCabins = async () => {
 
   return data;
 };
+
+export const getBreakfastPrice = async () => {
+  const { data, error } = await supabase
+    .from("settings")
+    .select("breakfastPrice");
+
+  if (error) {
+    console.error(error);
+    throw new Error("Breakfast Price could not be loaded");
+  }
+
+  return data;
+};

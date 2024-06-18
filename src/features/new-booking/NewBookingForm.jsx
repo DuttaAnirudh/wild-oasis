@@ -1,6 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import DatePicker from "react-datepicker";
+import { format } from "date-fns";
 import "react-datepicker/dist/react-datepicker.css";
+import { useBreakfast } from "./useBreakfast";
 import { useNewBookingContext } from "../context/NewBookingContext";
 
 import Form from "../../ui/Form";
@@ -14,51 +17,125 @@ import SelectCabins from "./SelectCabins";
 import Row from "../../ui/Row";
 
 const NewBookingForm = () => {
+  // React-hook-form
+  const { register, handleSubmit, reset, setValue, control } = useForm();
+
   const [checkInDate, setCheckInDate] = useState(new Date());
   const [checkOutDate, setCheckOutDate] = useState(new Date());
+  const [hasBreakfast, setHasBreakfast] = useState(false);
 
-  const { selectedCabinName, dispatch } = useNewBookingContext();
+  const { selectedCabinName, selectedCabinData, dispatch } =
+    useNewBookingContext();
+
+  const { breakfastPrice } = useBreakfast();
+
+  // Synchronize the state with react-hook-form
+  useEffect(() => {
+    setValue("startDate", checkInDate);
+    setValue("endDate", checkOutDate);
+  }, [checkInDate, checkOutDate, setValue]);
+
+  const onSubmit = (data) => {
+    const newBookingData = {
+      ...data,
+      startDate: format(checkInDate, "yyyy-MM-dd hh:mm:ss"),
+      endDate: format(checkOutDate, "yyyy-MM-dd hh:mm:ss"),
+      cabinPrice: selectedCabinData?.regularPrice,
+      isPaid: "TRUE",
+      status: "checked-in",
+      hasBreakfast: hasBreakfast?.toString().toUpperCase(),
+      extrasPrice: hasBreakfast ? breakfastPrice : 0,
+      cabinId: selectedCabinData?.id,
+    };
+    console.log(newBookingData);
+  };
 
   return (
-    <Form>
+    <Form onSubmit={handleSubmit(onSubmit)}>
       <Heading as="h4">Personal Details</Heading>
       <FormRow label="Full Name">
-        <Input />
+        <Input
+          type="text"
+          id="fullName"
+          {...register("fullName", {
+            required: "This field is requiered",
+          })}
+        />
       </FormRow>
       <FormRow label="Email">
-        <Input />
+        <Input
+          type="email"
+          id="email"
+          {...register("email", {
+            required: "This field is requiered",
+          })}
+        />
       </FormRow>
       <FormRow label="Nationality">
-        <Input />
+        <Input
+          type="text"
+          id="nationality"
+          {...register("nationality", {
+            required: "This field is requiered",
+          })}
+        />
       </FormRow>
       <FormRow label="National Id">
-        <Input />
+        <Input
+          type="text"
+          id="nationalID"
+          {...register("nationalID", {
+            required: "This field is requiered",
+          })}
+        />
       </FormRow>
 
       <Heading as="h4">Stay Details</Heading>
 
-      <FormRow label="Number of Guests">
-        <Input
-          type="number"
-          onChange={(e) =>
-            dispatch({ type: "updateNumberOfGuest", payload: e.target.value })
-          }
-        />
-      </FormRow>
-
       <FormRow label="Check-in date">
-        <DatePicker
-          selected={checkInDate}
-          onChange={(date) => setCheckInDate(date)}
-          dateFormat="dd/MM/yyyy"
+        <Controller
+          control={control}
+          name="startDate"
+          render={({ field }) => (
+            <DatePicker
+              selected={checkInDate}
+              onChange={(date) => {
+                setCheckInDate(date);
+                field.onChange(date.toString());
+              }}
+              dateFormat="dd/MM/yyyy"
+            />
+          )}
         />
       </FormRow>
 
       <FormRow label="Check-out date">
-        <DatePicker
-          selected={checkOutDate}
-          onChange={(date) => setCheckOutDate(date)}
-          dateFormat="dd/MM/yyyy"
+        <Controller
+          control={control}
+          name="endDate"
+          render={({ field }) => (
+            <DatePicker
+              selected={checkOutDate}
+              onChange={(date) => {
+                setCheckOutDate(date);
+                field.onChange(date);
+              }}
+              dateFormat="dd/MM/yyyy"
+            />
+          )}
+        />
+      </FormRow>
+
+      <FormRow label="Number of Guests">
+        <Input
+          type="number"
+          id="numGuests"
+          {...register("numGuests", {
+            required: "This field is requiered",
+          })}
+          onChange={(e) =>
+            dispatch({ type: "updateNumberOfGuest", payload: e.target.value })
+          }
         />
       </FormRow>
 
@@ -72,8 +149,15 @@ const NewBookingForm = () => {
       </Row>
 
       <FormRow>
-        <Checkbox>include breakfast?</Checkbox>
+        <Checkbox
+          id="hasBreakfast"
+          checked={hasBreakfast}
+          onChange={() => setHasBreakfast((breakfast) => !breakfast)}
+        >
+          include breakfast?
+        </Checkbox>
       </FormRow>
+
       <ButtonGroup>
         <Button type="submit" alignment="end">
           Book Now
