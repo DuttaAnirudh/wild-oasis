@@ -11,7 +11,12 @@ const initialState = {
 const reducer = (state, action) => {
   switch (action.type) {
     case "updateNumberOfGuest":
-      return { ...state, numOfGuest: action.payload };
+      return {
+        ...state,
+        numOfGuest: action.payload,
+        selectedCabinName: "",
+        selectedCabinData: null,
+      };
 
     case "selectCabin":
       return {

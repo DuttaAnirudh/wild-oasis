@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { format, isToday } from "date-fns";
+import { differenceInCalendarDays } from "date-fns/differenceInCalendarDays";
 import DatePicker from "react-datepicker";
-import { format } from "date-fns";
 import "react-datepicker/dist/react-datepicker.css";
 import { useBreakfast } from "./useBreakfast";
 import { useNewBookingContext } from "../context/NewBookingContext";
@@ -15,6 +16,8 @@ import Button from "../../ui/Button";
 import ButtonGroup from "../../ui/ButtonGroup";
 import SelectCabins from "./SelectCabins";
 import Row from "../../ui/Row";
+import Textarea from "../../ui/Textarea";
+import { useNewBooking } from "./useNewBooking";
 
 const NewBookingForm = () => {
   // React-hook-form
@@ -24,10 +27,15 @@ const NewBookingForm = () => {
   const [checkOutDate, setCheckOutDate] = useState(new Date());
   const [hasBreakfast, setHasBreakfast] = useState(false);
 
-  const { selectedCabinName, selectedCabinData, dispatch } =
+  const { numOfGuest, selectedCabinName, selectedCabinData, dispatch } =
     useNewBookingContext();
-
   const { breakfastPrice } = useBreakfast();
+  const { createNewBooking, isBooking } = useNewBooking();
+
+  const numNights = differenceInCalendarDays(checkOutDate, checkInDate);
+  const totalPrice =
+    (selectedCabinData?.regularPrice + breakfastPrice * numOfGuest) * numNights;
+  const status = isToday(checkInDate) ? "checked-in" : "unconfirmed";
 
   // Synchronize the state with react-hook-form
   useEffect(() => {
@@ -36,18 +44,28 @@ const NewBookingForm = () => {
   }, [checkInDate, checkOutDate, setValue]);
 
   const onSubmit = (data) => {
-    const newBookingData = {
-      ...data,
+    const { fullName, email, nationalID, nationality, observations } = data;
+
+    const guestData = { fullName, email, nationalID, nationality };
+
+    const bookingData = {
       startDate: format(checkInDate, "yyyy-MM-dd hh:mm:ss"),
       endDate: format(checkOutDate, "yyyy-MM-dd hh:mm:ss"),
+      numNights: numNights === 0 ? 1 : numNights,
+      numGuests: numOfGuest,
       cabinPrice: selectedCabinData?.regularPrice,
-      isPaid: "TRUE",
-      status: "checked-in",
-      hasBreakfast: hasBreakfast?.toString().toUpperCase(),
       extrasPrice: hasBreakfast ? breakfastPrice : 0,
+      totalPrice,
+      status,
+      hasBreakfast: hasBreakfast?.toString().toUpperCase(),
+      isPaid: "TRUE",
+      observations,
       cabinId: selectedCabinData?.id,
     };
-    console.log(newBookingData);
+
+    createNewBooking({ guestData, bookingData });
+
+    reset();
   };
 
   return (
@@ -60,6 +78,7 @@ const NewBookingForm = () => {
           {...register("fullName", {
             required: "This field is requiered",
           })}
+          disabled={isBooking}
         />
       </FormRow>
       <FormRow label="Email">
@@ -69,6 +88,7 @@ const NewBookingForm = () => {
           {...register("email", {
             required: "This field is requiered",
           })}
+          disabled={isBooking}
         />
       </FormRow>
       <FormRow label="Nationality">
@@ -78,6 +98,7 @@ const NewBookingForm = () => {
           {...register("nationality", {
             required: "This field is requiered",
           })}
+          disabled={isBooking}
         />
       </FormRow>
       <FormRow label="National Id">
@@ -87,6 +108,7 @@ const NewBookingForm = () => {
           {...register("nationalID", {
             required: "This field is requiered",
           })}
+          disabled={isBooking}
         />
       </FormRow>
 
@@ -103,6 +125,7 @@ const NewBookingForm = () => {
                 setCheckInDate(date);
                 field.onChange(date.toString());
               }}
+              disabled={isBooking}
               dateFormat="dd/MM/yyyy"
             />
           )}
@@ -120,6 +143,7 @@ const NewBookingForm = () => {
                 setCheckOutDate(date);
                 field.onChange(date);
               }}
+              disabled={isBooking}
               dateFormat="dd/MM/yyyy"
             />
           )}
@@ -133,6 +157,7 @@ const NewBookingForm = () => {
           {...register("numGuests", {
             required: "This field is requiered",
           })}
+          disabled={isBooking}
           onChange={(e) =>
             dispatch({ type: "updateNumberOfGuest", payload: e.target.value })
           }
@@ -148,18 +173,23 @@ const NewBookingForm = () => {
         )}
       </Row>
 
+      <FormRow label="Observations">
+        <Textarea {...register("observations")} />
+      </FormRow>
+
       <FormRow>
         <Checkbox
           id="hasBreakfast"
           checked={hasBreakfast}
           onChange={() => setHasBreakfast((breakfast) => !breakfast)}
+          disabled={isBooking}
         >
           include breakfast?
         </Checkbox>
       </FormRow>
 
       <ButtonGroup>
-        <Button type="submit" alignment="end">
+        <Button type="submit" alignment="end" disabled={isBooking}>
           Book Now
         </Button>
       </ButtonGroup>
