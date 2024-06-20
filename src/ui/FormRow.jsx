@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import Heading from "./Heading";
 
 const StyledFormRow = styled.div`
   display: grid;
@@ -30,12 +31,13 @@ const Error = styled.span`
   color: var(--color-red-700);
 `;
 
-const FormRow = ({ label, error, children }) => {
+const FormRow = ({ label, error, description, children }) => {
   return (
     <StyledFormRow>
       {label && <Label htmlFor={children.props.id}>{label}</Label>}
       {children}
       {error && <Error>{error}</Error>}
+      {description && !error && <Heading as="h5">{description}</Heading>}
     </StyledFormRow>
   );
 };

@@ -26,7 +26,7 @@ const Heading = styled.h1`
       font-weight: 600;
       padding-block: 1rem;
     `}
-  font-size: 20px;
+   font-size: 1.4rem;
   font-weight: 600;
 `;
 

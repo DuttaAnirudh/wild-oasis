@@ -6,6 +6,9 @@ const initialState = {
   numOfGuest: 0,
   selectedCabinName: "",
   selectedCabinData: null,
+  showDetailsBox: false,
+  guestData: null,
+  bookingData: null,
 };
 
 const reducer = (state, action) => {
@@ -16,6 +19,9 @@ const reducer = (state, action) => {
         numOfGuest: action.payload,
         selectedCabinName: "",
         selectedCabinData: null,
+        showDetailsBox: false,
+        guestData: null,
+        bookingData: null,
       };
 
     case "selectCabin":
@@ -25,18 +31,51 @@ const reducer = (state, action) => {
         selectedCabinData: action.payload,
       };
 
+    case "showDetails":
+      return {
+        ...state,
+        guestData: action.payload.guestData,
+        bookingData: action.payload.bookingData,
+        showDetailsBox: true,
+      };
+
+    case "resetShowDetails":
+      return {
+        ...state,
+        showDetailsBox: false,
+        guestData: null,
+        bookingData: null,
+      };
+
     default:
       throw new Error(`Can't perform the requested action`);
   }
 };
 
 const NewBookingProvider = ({ children }) => {
-  const [{ numOfGuest, selectedCabinName, selectedCabinData }, dispatch] =
-    useReducer(reducer, initialState);
+  const [
+    {
+      numOfGuest,
+      selectedCabinName,
+      selectedCabinData,
+      showDetailsBox,
+      guestData,
+      bookingData,
+    },
+    dispatch,
+  ] = useReducer(reducer, initialState);
 
   return (
     <NewBookingContext.Provider
-      value={{ numOfGuest, selectedCabinName, selectedCabinData, dispatch }}
+      value={{
+        numOfGuest,
+        selectedCabinName,
+        selectedCabinData,
+        showDetailsBox,
+        guestData,
+        bookingData,
+        dispatch,
+      }}
     >
       {children}
     </NewBookingContext.Provider>

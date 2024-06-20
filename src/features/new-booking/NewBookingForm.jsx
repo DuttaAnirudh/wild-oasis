@@ -18,17 +18,28 @@ import SelectCabins from "./SelectCabins";
 import Row from "../../ui/Row";
 import Textarea from "../../ui/Textarea";
 import { useNewBooking } from "./useNewBooking";
+import BookingDataBox from "./BookingDataBox";
 
 const NewBookingForm = () => {
   // React-hook-form
-  const { register, handleSubmit, reset, setValue, control } = useForm();
+  const { register, handleSubmit, reset, setValue, control, formState } =
+    useForm();
+  const { errors } = formState;
 
   const [checkInDate, setCheckInDate] = useState(new Date());
   const [checkOutDate, setCheckOutDate] = useState(new Date());
   const [hasBreakfast, setHasBreakfast] = useState(false);
 
-  const { numOfGuest, selectedCabinName, selectedCabinData, dispatch } =
-    useNewBookingContext();
+  // Fetching data from NewBooking Context
+  const {
+    numOfGuest,
+    selectedCabinName,
+    selectedCabinData,
+    showDetailsBox,
+    dispatch,
+  } = useNewBookingContext();
+
+  // Fetching data from supabase
   const { breakfastPrice } = useBreakfast();
   const { createNewBooking, isBooking } = useNewBooking();
 
@@ -36,6 +47,7 @@ const NewBookingForm = () => {
   const totalPrice =
     (selectedCabinData?.regularPrice + breakfastPrice * numOfGuest) * numNights;
   const status = isToday(checkInDate) ? "checked-in" : "unconfirmed";
+  const disableSubmitCondition = numOfGuest <= 0 || selectedCabinData === null;
 
   // Synchronize the state with react-hook-form
   useEffect(() => {
@@ -43,7 +55,7 @@ const NewBookingForm = () => {
     setValue("endDate", checkOutDate);
   }, [checkInDate, checkOutDate, setValue]);
 
-  const onSubmit = (data) => {
+  const onSubmit = (data, e) => {
     const { fullName, email, nationalID, nationality, observations } = data;
 
     const guestData = { fullName, email, nationalID, nationality };
@@ -51,7 +63,7 @@ const NewBookingForm = () => {
     const bookingData = {
       startDate: format(checkInDate, "yyyy-MM-dd hh:mm:ss"),
       endDate: format(checkOutDate, "yyyy-MM-dd hh:mm:ss"),
-      numNights: numNights === 0 ? 1 : numNights,
+      numNights: numNights + 1,
       numGuests: numOfGuest,
       cabinPrice: selectedCabinData?.regularPrice,
       extrasPrice: hasBreakfast ? breakfastPrice : 0,
@@ -63,58 +75,80 @@ const NewBookingForm = () => {
       cabinId: selectedCabinData?.id,
     };
 
-    createNewBooking({ guestData, bookingData });
+    const buttonClicked = e.nativeEvent.submitter.name;
+    // Handle SHOW DETAILS button submit
+    if (buttonClicked === "showDetails") {
+      return dispatch({
+        type: "showDetails",
+        payload: { guestData, bookingData },
+      });
+    }
 
-    reset();
+    // Handle BOOK NOW button submit
+    if (buttonClicked === "bookNow") {
+      // Make a new booking request
+      createNewBooking({ guestData, bookingData });
+
+      // Clear Form
+      reset();
+    }
   };
 
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
       <Heading as="h4">Personal Details</Heading>
-      <FormRow label="Full Name">
+      <FormRow label="Full Name" error={errors?.fullName?.message}>
         <Input
           type="text"
           id="fullName"
           {...register("fullName", {
             required: "This field is requiered",
           })}
+          onChange={() => dispatch({ type: "resetShowDetails" })}
           disabled={isBooking}
         />
       </FormRow>
-      <FormRow label="Email">
+      <FormRow label="Email" error={errors?.email?.message}>
         <Input
           type="email"
           id="email"
           {...register("email", {
             required: "This field is requiered",
           })}
+          onChange={() => dispatch({ type: "resetShowDetails" })}
           disabled={isBooking}
         />
       </FormRow>
-      <FormRow label="Nationality">
+      <FormRow label="Nationality" error={errors?.nationality?.message}>
         <Input
           type="text"
           id="nationality"
           {...register("nationality", {
             required: "This field is requiered",
           })}
+          onChange={() => dispatch({ type: "resetShowDetails" })}
           disabled={isBooking}
         />
       </FormRow>
-      <FormRow label="National Id">
+      <FormRow label="National Id" error={errors?.nationalID?.message}>
         <Input
           type="text"
           id="nationalID"
           {...register("nationalID", {
             required: "This field is requiered",
           })}
+          onChange={() => dispatch({ type: "resetShowDetails" })}
           disabled={isBooking}
         />
       </FormRow>
 
       <Heading as="h4">Stay Details</Heading>
 
-      <FormRow label="Check-in date">
+      <FormRow
+        label="Check-in date"
+        error={errors?.startDate?.message}
+        description={format(new Date(checkInDate), "EEE, MMM dd yyyy")}
+      >
         <Controller
           control={control}
           name="startDate"
@@ -132,7 +166,11 @@ const NewBookingForm = () => {
         />
       </FormRow>
 
-      <FormRow label="Check-out date">
+      <FormRow
+        label="Check-out date"
+        error={errors?.endDate?.message}
+        description={format(new Date(checkOutDate), "EEE, MMM dd yyyy")}
+      >
         <Controller
           control={control}
           name="endDate"
@@ -150,7 +188,7 @@ const NewBookingForm = () => {
         />
       </FormRow>
 
-      <FormRow label="Number of Guests">
+      <FormRow label="Number of Guests" error={errors?.numGuests?.message}>
         <Input
           type="number"
           id="numGuests"
@@ -174,22 +212,45 @@ const NewBookingForm = () => {
       </Row>
 
       <FormRow label="Observations">
-        <Textarea {...register("observations")} />
+        <Textarea
+          {...register("observations")}
+          onChange={() => dispatch({ type: "resetShowDetails" })}
+        />
       </FormRow>
 
       <FormRow>
         <Checkbox
           id="hasBreakfast"
           checked={hasBreakfast}
-          onChange={() => setHasBreakfast((breakfast) => !breakfast)}
+          onChange={() => {
+            setHasBreakfast((breakfast) => !breakfast);
+            dispatch({ type: "resetShowDetails" });
+          }}
           disabled={isBooking}
         >
           include breakfast?
         </Checkbox>
       </FormRow>
 
+      {showDetailsBox && <BookingDataBox />}
+
       <ButtonGroup>
-        <Button type="submit" alignment="end" disabled={isBooking}>
+        {!showDetailsBox && (
+          <Button
+            type="submit"
+            name="showDetails"
+            alignment="center"
+            disabled={disableSubmitCondition || isBooking}
+          >
+            Show Details
+          </Button>
+        )}
+        <Button
+          type="submit"
+          name="bookNow"
+          alignment="center"
+          disabled={disableSubmitCondition || isBooking}
+        >
           Book Now
         </Button>
       </ButtonGroup>
