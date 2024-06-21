@@ -29,6 +29,7 @@ const NewBookingForm = () => {
   const [checkInDate, setCheckInDate] = useState(new Date());
   const [checkOutDate, setCheckOutDate] = useState(new Date());
   const [hasBreakfast, setHasBreakfast] = useState(false);
+  const [isCheckingIn, setIsCheckingIn] = useState(true);
 
   // Fetching data from NewBooking Context
   const {
@@ -46,7 +47,7 @@ const NewBookingForm = () => {
   const numNights = differenceInCalendarDays(checkOutDate, checkInDate);
   const totalPrice =
     (selectedCabinData?.regularPrice + breakfastPrice * numOfGuest) * numNights;
-  const status = isToday(checkInDate) ? "checked-in" : "unconfirmed";
+  const status = isCheckingIn ? "checked-in" : "unconfirmed";
   const disableSubmitCondition = numOfGuest <= 0 || selectedCabinData === null;
 
   // Synchronize the state with react-hook-form
@@ -231,6 +232,21 @@ const NewBookingForm = () => {
           include breakfast?
         </Checkbox>
       </FormRow>
+      {isToday(checkInDate) && (
+        <FormRow>
+          <Checkbox
+            id="isCheckingIn"
+            checked={isCheckingIn}
+            onChange={() => {
+              setIsCheckingIn((checkIn) => !checkIn);
+              dispatch({ type: "resetShowDetails" });
+            }}
+            disabled={isBooking}
+          >
+            Checking In Now?
+          </Checkbox>
+        </FormRow>
+      )}
 
       {showDetailsBox && <BookingDataBox />}
 
