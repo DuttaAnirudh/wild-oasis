@@ -32,8 +32,11 @@
 ### Authentication
 
 - Users of the app are hotel employees who need to log in to perform tasks.
+- Only authorized users can log in and use the application.
+- Users are authenticated using Supabase authentication.
+- The authentication process includes a two-factor authentication (2FA) step. Users receive an email to verify their identity before they can access the application.
 - New users can only be signed up inside the application to ensure that only actual hotel employees get accounts.
-- Users can upload an avatar, and change their name and password.
+- Users can upload & update an avatar, and change their name and password.
 
 ### Cabins
 
@@ -78,8 +81,8 @@
 
 ## Improvements
 
-- Implement the functionality to create new bookings as guests arrive.
+- Implement the functionality to create new bookings as guests arrive. [✅ Feature Added]
 - Enable editing of existing bookings.
 - Allow modifications to check-in and check-out times.
-- Implement dynamic pricing for cabins, allowing prices to vary each day.
+- Implement dynamic pricing for cabins, allowing prices to vary.
 - Upon guest checkout, navigate to a different page to generate a PDF invoice and automatically email it to the guest.
