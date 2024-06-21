@@ -52,7 +52,7 @@ function App() {
                   path="new-booking"
                   element={
                     <NewBookingProvider>
-                      <NewBooking />{" "}
+                      <NewBooking />
                     </NewBookingProvider>
                   }
                 />

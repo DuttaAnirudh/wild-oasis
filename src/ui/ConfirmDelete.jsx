@@ -20,7 +20,38 @@ const StyledConfirmDelete = styled.div`
   }
 `;
 
-function ConfirmDelete({ resourceName, onConfirm, disabled, onCloseModal }) {
+function ConfirmDelete({
+  action,
+  resourceName,
+  onConfirm,
+  disabled,
+  onCloseModal,
+}) {
+  if (action === "checkout") {
+    return (
+      <StyledConfirmDelete>
+        <Heading as="h3">Checkout {resourceName}</Heading>
+        <p>
+          Guest with {resourceName} will be checked out permanently? This action
+          cannot be undone.
+        </p>
+
+        <div>
+          <Button
+            variation="secondary"
+            disabled={disabled}
+            onClick={onCloseModal}
+          >
+            Cancel
+          </Button>
+          <Button variation="danger" disabled={disabled} onClick={onConfirm}>
+            Check Out
+          </Button>
+        </div>
+      </StyledConfirmDelete>
+    );
+  }
+
   return (
     <StyledConfirmDelete>
       <Heading as="h3">Delete {resourceName}</Heading>

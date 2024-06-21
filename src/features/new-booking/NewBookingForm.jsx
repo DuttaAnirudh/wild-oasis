@@ -29,7 +29,7 @@ const NewBookingForm = () => {
   const [checkInDate, setCheckInDate] = useState(new Date());
   const [checkOutDate, setCheckOutDate] = useState(new Date());
   const [hasBreakfast, setHasBreakfast] = useState(false);
-  const [isCheckingIn, setIsCheckingIn] = useState(true);
+  const [isCheckingIn, setIsCheckingIn] = useState(false);
 
   // Fetching data from NewBooking Context
   const {

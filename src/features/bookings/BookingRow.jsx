@@ -119,19 +119,26 @@ const BookingRow = ({
             )}
 
             {status === "checked-in" && (
-              <Menus.Button
-                icon={<HiArrowUpOnSquare />}
-                onClick={() => checkout(bookingId)}
-                disabled={isCheckingOut}
-              >
-                Check Out
-              </Menus.Button>
+              <Modal.Open opens="check-out">
+                <Menus.Button icon={<HiArrowUpOnSquare />}>
+                  Check Out
+                </Menus.Button>
+              </Modal.Open>
             )}
 
             <Modal.Open opens="delete-booking">
               <Menus.Button icon={<HiTrash />}>Delete booking</Menus.Button>
             </Modal.Open>
           </Menus.List>
+
+          <Modal.Window name="check-out">
+            <ConfirmDelete
+              action="checkout"
+              resourceName={`booking #${bookingId}`}
+              onConfirm={() => checkout(bookingId)}
+              disabled={isCheckingOut}
+            />
+          </Modal.Window>
 
           <Modal.Window name="delete-booking">
             <ConfirmDelete
